@@ -76,6 +76,7 @@ int main(int argc, char **argv)
   std::string sPredefinedPairList = "";
   std::string sNearestMatchingMethod = "AUTO";
   bool bForce = false;
+  bool bPrintText = false;
   bool bGuided_matching = false;
   int imax_iteration = 2048;
   unsigned int ui_max_cache_size = 0;
@@ -90,6 +91,7 @@ int main(int argc, char **argv)
   cmd.add( make_option('l', sPredefinedPairList, "pair_list") );
   cmd.add( make_option('n', sNearestMatchingMethod, "nearest_matching_method") );
   cmd.add( make_option('f', bForce, "force") );
+  cmd.add( make_option('t', bPrintText, "print_text") );
   cmd.add( make_option('m', bGuided_matching, "guided_matching") );
   cmd.add( make_option('I', imax_iteration, "max_iteration") );
   cmd.add( make_option('c', ui_max_cache_size, "cache_size") );
@@ -104,6 +106,7 @@ int main(int argc, char **argv)
       << "[-o|--out_dir path] output path where computed are stored\n"
       << "\n[Optional]\n"
       << "[-f|--force] Force to recompute data]\n"
+      << "[-t]--print_text] save matches data to disk in both binary and text formats\n"
       << "[-r|--ratio] Distance ratio to discard non meaningful matches\n"
       << "   0.8: (default).\n"
       << "[-g|--geometric_model]\n"
@@ -146,6 +149,7 @@ int main(int argc, char **argv)
             << "--out_dir " << sMatchesDirectory << "\n"
             << "Optional parameters:" << "\n"
             << "--force " << bForce << "\n"
+            << "--text " << bPrintText << "\n"
             << "--ratio " << fDistRatio << "\n"
             << "--geometric_model " << sGeometricModel << "\n"
             << "--video_mode_matching " << iMatchingVideoMode << "\n"
@@ -171,23 +175,28 @@ int main(int argc, char **argv)
 
   EGeometricModel eGeometricModelToCompute = FUNDAMENTAL_MATRIX;
   std::string sGeometricMatchesFilename = "";
+  std::string sGeometricMatchesTextFilename = "";
   switch (sGeometricModel[0])
   {
     case 'f': case 'F':
       eGeometricModelToCompute = FUNDAMENTAL_MATRIX;
       sGeometricMatchesFilename = "matches.f.bin";
+      sGeometricMatchesTextFilename = "matches.f.txt";
     break;
     case 'e': case 'E':
       eGeometricModelToCompute = ESSENTIAL_MATRIX;
       sGeometricMatchesFilename = "matches.e.bin";
+      sGeometricMatchesTextFilename = "matches.e.txt";
     break;
     case 'h': case 'H':
       eGeometricModelToCompute = HOMOGRAPHY_MATRIX;
       sGeometricMatchesFilename = "matches.h.bin";
+      sGeometricMatchesTextFilename = "matches.h.txt";
     break;
     case 'a': case 'A':
       eGeometricModelToCompute = ESSENTIAL_MATRIX_ANGULAR;
       sGeometricMatchesFilename = "matches.f.bin";
+      sGeometricMatchesTextFilename = "matches.f.txt";
     break;
     default:
       std::cerr << "Unknown geometric model" << std::endl;
@@ -377,6 +386,16 @@ int main(int argc, char **argv)
           << std::string(sMatchesDirectory + "/matches.putative.bin");
         return EXIT_FAILURE;
       }
+      if (bPrintText)
+      {
+        if (!Save(map_PutativesMatches, std::string(sMatchesDirectory + "/matches.putative.txt")))
+        {
+          std::cerr
+            << "Cannot save computed matches in: "
+            << std::string(sMatchesDirectory + "/matches.putative.txt");
+          return EXIT_FAILURE;
+        }
+      }
     }
     std::cout << "Task (Regions Matching) done in (s): " << timer.elapsed() << std::endl;
   }
@@ -472,6 +491,17 @@ int main(int argc, char **argv)
           << "Cannot save computed matches in: "
           << std::string(sMatchesDirectory + "/" + sGeometricMatchesFilename);
       return EXIT_FAILURE;
+    }
+    if (bPrintText)
+    {
+      if (!Save(map_GeometricMatches,
+        std::string(sMatchesDirectory + "/" + sGeometricMatchesTextFilename)))
+      {
+        std::cerr
+            << "Cannot save computed matches in: "
+            << std::string(sMatchesDirectory + "/" + sGeometricMatchesTextFilename);
+        return EXIT_FAILURE;
+      }
     }
 
     std::cout << "Task done in (s): " << timer.elapsed() << std::endl;
