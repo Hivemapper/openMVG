@@ -216,6 +216,12 @@ class Pinhole_Intrinsic_Radial_K1 : public Pinhole_Intrinsic
       {
         constant_index.push_back(3);
       }
+
+      std::cout << std::endl << std::endl << "RADIAL K1: ";
+      for (const int idx : constant_index)
+        std::cout << idx << ", ";
+      std::cout << std::endl << std::endl;
+
       return constant_index;
     }
 
@@ -428,6 +434,12 @@ class Pinhole_Intrinsic_Radial_K3 : public Pinhole_Intrinsic
         constant_index.push_back(4);
         constant_index.push_back(5);
       }
+
+      std::cout << std::endl << std::endl << "RADIAL K3: ";
+      for (const int idx : constant_index)
+        std::cout << idx << ", ";
+      std::cout << std::endl << std::endl;
+
       return constant_index;
     }
 
