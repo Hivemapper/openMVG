@@ -7,6 +7,10 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
+if(POLICY CMP0100)
+  cmake_policy(SET CMP0100 NEW)
+endif()
+
 project(openMVG C CXX)
 
 # guard against in-source builds
