@@ -191,6 +191,12 @@ struct RepeatabilityResults_Matching
 features::EDESCRIBER_PRESET stringToEnum(const std::string & sPreset)
 {
   features::EDESCRIBER_PRESET preset;
+  if (sPreset == "CUSTOM")
+    preset = features::CUSTOM_PRESET;
+  else
+  if (sPreset == "LOW")
+    preset = features::LOW_PRESET;
+  else
   if (sPreset == "NORMAL")
     preset = features::NORMAL_PRESET;
   else
@@ -246,6 +252,7 @@ int main(int argc, char **argv)
       << "   NORMAL (default),\n"
       << "   HIGH,\n"
       << "   ULTRA: !!Can take long time!!\n"
+      << "   CUSTOM: (will need to set the extraction_scale parameter)\n"
       << "[-f|--feature_repeatability]\n"
       << "  (used to control the Image_describer configuration):\n"
       << "   0 (default),\n"
